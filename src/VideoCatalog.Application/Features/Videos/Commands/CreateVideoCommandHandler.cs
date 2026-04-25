@@ -1,5 +1,6 @@
 using MassTransit;
 using MediatR;
+using Microsoft.Extensions.Caching.Distributed;
 using VideoCatalog.Application.DTOs;
 using VideoCatalog.Domain.Entities;
 using VideoCatalog.Domain.Events;
@@ -11,11 +12,13 @@ public class CreateVideoCommandHandler : IRequestHandler<CreateVideoCommand, Vid
 {
     private readonly IVideoRepository _repository;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IDistributedCache _cache;
 
-    public CreateVideoCommandHandler(IVideoRepository repository, IPublishEndpoint publishEndpoint)
+    public CreateVideoCommandHandler(IVideoRepository repository, IPublishEndpoint publishEndpoint, IDistributedCache cache)
     {
         _repository = repository;
         _publishEndpoint = publishEndpoint;
+        _cache = cache;
     }
 
     public async Task<VideoDto> Handle(CreateVideoCommand request, CancellationToken cancellationToken)
@@ -37,6 +40,9 @@ public class CreateVideoCommandHandler : IRequestHandler<CreateVideoCommand, Vid
         // Save to database via repository
         await _repository.AddAsync(video, cancellationToken);
         await _repository.SaveChangesAsync(cancellationToken);
+
+        // Invalidate cache for video lists (if you implement GetAllVideos caching)
+        await _cache.RemoveAsync("videos:all", cancellationToken);
 
         // Publish integration event
         var integrationEvent = new VideoUploadedIntegrationEvent(
