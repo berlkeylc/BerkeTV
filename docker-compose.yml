@@ -81,6 +81,21 @@ services:
     networks:
       - videocatalog-network
 
+  # .NET Media Processor Worker Service
+  media-processor:
+    build:
+      context: .
+      dockerfile: Dockerfile.MediaProcessor
+    container_name: videocatalog-media-processor
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - ConnectionStrings__RabbitMQ=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - videocatalog-network
+
 volumes:
   postgres_data:
   redis_data:

@@ -1,3 +1,4 @@
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using VideoCatalog.Application.Features.Videos.Queries;
 using VideoCatalog.Domain.Interfaces;
@@ -13,6 +14,24 @@ builder.Services.AddDbContext<VideoCatalogDbContext>(options =>
 // DI
 builder.Services.AddScoped<IVideoRepository, VideoRepository>();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllVideosQuery).Assembly));
+
+// MassTransit with RabbitMQ
+builder.Services.AddMassTransit(x =>
+{
+    x.SetKebabCaseEndpointNameFormatter();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ") ?? "amqp://guest:guest@localhost:5672", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
+        cfg.ConfigureEndpoints(context);
+    });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
