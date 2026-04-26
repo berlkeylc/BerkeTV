@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VideoCatalog.Application.Features.Videos.Commands;
 using VideoCatalog.Application.Features.Videos.Queries;
@@ -7,6 +8,7 @@ namespace VideoCatalog.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class VideosController : ControllerBase
 {
     private readonly IMediator _mediator;

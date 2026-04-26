@@ -5,5 +5,7 @@
     <Project Path="src/VideoCatalog.Domain/VideoCatalog.Domain.csproj" />
     <Project Path="src/VideoCatalog.Infrastructure/VideoCatalog.Infrastructure.csproj" />
     <Project Path="src/VideoCatalog.MediaProcessor/VideoCatalog.MediaProcessor.csproj" />
+    <Project Path="src/VideoCatalog.Identity/VideoCatalog.Identity.csproj" />
+    <Project Path="src/VideoCatalog.Gateway/VideoCatalog.Gateway.csproj" />
   </Folder>
 </Solution>
